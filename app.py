@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+import csv
 # from flask_restful import Resource, Api, reqparse
 # from flask_sqlalchemy import pagination
 import pandas as pd
@@ -49,8 +50,12 @@ def search_items():
 # TODO: update character by id
 @app.route('/characters/<int:id>', methods=["PUT"])
 def update_character(id):
-    # TODO:
-    return jsonify()
+    character_data = request.get_json()
+    if id: #check if id is found in the csv
+        df.loc[id] = character_data #access rows for changing
+        df.to_csv(FILE_PATH, quoting=csv.QUOTE_ALL)
+        return jsonify(character_data)
+    return jsonify({"message": "character cannot be found."}), 404
 
 @app.route('/characters/<int:id>', methods=["DELETE"])
 def delete_character(id):
